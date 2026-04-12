@@ -2,7 +2,6 @@
 #![feature(random)]
 
 use std::fmt::{Display, Write};
-use clap::Parser;
 use std::random::random;
 
 fn random_bool() -> bool {
@@ -22,43 +21,36 @@ fn random_int(min: i32, max: i32) -> i32 {
 }
 
 #[derive(Copy, Clone)]
-enum Face {
+pub enum Face {
     R, L, U, D, B, F
 }
 
 impl Face {
-    fn to_char(self) -> char {
+    pub fn to_char(self) -> char {
         const FACES: [char; 6] = ['R', 'L', 'U', 'D', 'B', 'F'];
         FACES[self as usize]
     }
-    fn from_i32(x: i32) -> Self {
+    pub fn from_i32(x: i32) -> Self {
         const FACES: [Face; 6] = [Face::R, Face::L, Face::U, Face::D, Face::B, Face::F];
         FACES[x as usize]
     }
 }
 
-struct Mods {
-    x2: bool,
-    prime: bool,
-    wide: bool,
-    slice: Option<u32>
+pub struct Mods {
+    pub x2: bool,
+    pub prime: bool,
+    pub wide: bool,
+    pub slice: Option<u32>
 }
 
 impl Mods {
-    fn new() -> Self {
-        Self {
-            x2: false,
-            prime: false, 
+    pub fn rand(x: i32) -> Self {
+        let mut ret = Self {
+            x2: random_bool(),
+            prime: random_bool(),
             wide: false,
             slice: None
-        }
-    }
-
-    fn rand(x: i32) -> Self {
-        let mut ret = Self::new();
-
-        ret.x2 = random_bool();
-        ret.prime = random_bool();
+        };
 
         if x >= 4 {
             ret.wide = random_bool();
@@ -82,17 +74,17 @@ impl Mods {
     }
 }
 
-struct Move {
-    face: Face,
-    mods: Mods
+pub struct Move {
+    pub face: Face,
+    pub mods: Mods
 }
 
-struct Seq {
-    val: Vec<Move>
+pub struct Seq {
+    pub val: Vec<Move>
 }
 
 impl Seq {
-    fn generate(len: usize, cubex: i32) -> Self {
+    pub fn generate(len: usize, cubex: i32) -> Self {
         let mut sq = Vec::<Move>::with_capacity(len);
 
         let mut pface: i32 = -1;
@@ -112,6 +104,7 @@ impl Seq {
 
         Self{val: sq}
     }
+
 }
 
 impl Display for Seq {
@@ -141,39 +134,5 @@ impl Display for Seq {
         }
 
         Ok(())
-    }
-}
-
-#[derive(Parser)]
-#[command(after_help = r#"Notation:
-Uses the standard WCA notation
-Faces:
-    R - Right face
-    L - Left face
-    U - Up/top face
-    D - Down/bottom face
-    F - Front face
-    B - Back face
-Modifiers:
-    '    - Rotate counter-clockwise
-    2    - Rotate twice (180°)
-    XFw  - Rotate X layers of F side
-    Fw   - Rotate 2 layers of F side
-    None - Rotate clockwise once (90°)
-"#)]
-struct Cli {
-    #[arg(short = 'l', long = "length", help = "Generate scramble with <LEN> moves", default_value_t = 20)]
-    len: usize,
-    #[arg(short = 's', long = "size", 
-    help = "Generate a scramble for X size cube, for example if value is 5 the scramble will be for a 5x5 cube", default_value_t = 3)]
-    cubesize: i32,
-    #[arg(short = 'n', long = "num", help = "Generate x number of scrambles", default_value_t = 1)]
-    num: i32,
-}
-
-fn main() {
-    let cli = Cli::parse();
-    for _ in 0..cli.num {
-        println!("{}", Seq::generate(cli.len, cli.cubesize));
     }
 }

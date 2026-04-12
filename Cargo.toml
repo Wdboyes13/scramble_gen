@@ -3,9 +3,13 @@ name = "scramble_gen"
 version = "1.0.0"
 edition = "2024"
 
+[lib]
+name = "scramble_lib"
+path = "scramble_lib/lib.rs"
+
 [[bin]]
 name = "scramble"
-path = "src/main.rs"
+path = "scramble_bin/main.rs"
 
 [dependencies]
 clap = { version = "4.6.0", default-features = false ,features = ["derive", "help", "std", "usage"] }
