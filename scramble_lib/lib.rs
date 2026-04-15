@@ -25,6 +25,7 @@ pub enum Face {
     R, L, U, D, B, F
 }
 
+
 impl Face {
     pub fn to_char(self) -> char {
         const FACES: [char; 6] = ['R', 'L', 'U', 'D', 'B', 'F'];
